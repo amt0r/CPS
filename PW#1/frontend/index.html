@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MultiphaseMeter</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="http://localhost:8080/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <button id="history" onclick="toggleHistory()">History</button>
+    
+    <div id="main">
+        <h1>MultiphaseMeter</h1>
+        
+        <h3>Id</h3>
+        <input type="number" id="meterId"><br>
+        <h3>Day value</h3>
+        <input type="number" id="day"><br>
+        <h3>Night value</h3>
+        <input type="number" id="night"><br>
+        <button id="update" onclick="updateValues()">Update date</button>
+        <div id="massage"></div>
+        <ul id="metertList"></ul>
+    </div>
+
+    <div id="modalContent">
+        <button id="close" onclick="toggleHistory()">✖</button>
+        <ul id="historyList"></ul>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
