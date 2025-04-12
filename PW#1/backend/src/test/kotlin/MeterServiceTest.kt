@@ -1,6 +1,8 @@
 import com.example.models.*
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -19,6 +21,13 @@ class MeterServiceTest {
     @BeforeEach
     fun setup() {
         val database = Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;", driver = "org.h2.Driver")
+
+        transaction(database) {
+            SchemaUtils.drop(MeterService.Meters, TariffService.Tariffs, PunishmentService.Punishments,
+                HistoryService.History
+            )
+        }
+
         meterService = MeterService(database)
         punishmentService = PunishmentService(database)
         tariffService = TariffService(database)
