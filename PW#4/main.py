@@ -1,45 +1,44 @@
-import time
-
-from grid import Grid
-from island import Island
-from reader import load_forbidden_cells
-from visualizer import Visualizer
+import matplotlib.pyplot as plt
+import numpy as np
+from fun import *
+from matplotlib.animation import FuncAnimation
+from scipy.integrate import odeint
 
 
 def main():
-    grid_size = 30
-    forbidden_cells = load_forbidden_cells("./PW#4/grid.csv") 
+    state0_1 = [1.0, 1.0, 1.0]
+    state0_2 = [1.0, 1.0, 1.001]
+    time = np.arange(0.0, 49.0, 0.01)
 
-    wifi_count = int(input(f"Enter the number of Wi-Fi routers (default 8): ").strip() or "8")
-    wifi_power = int(input(f"Enter the Wi-Fi power (default 10): ").strip() or "10")
-    wall_penalty = int(input(f"Enter the wall penalty (default 7): ").strip() or "7")
-    population_size = int(input(f"Enter the population size (default 50): ").strip() or "50")
-    mutation_rate = float(input(f"Enter the mutation rate (default 0.1): ").strip() or "0.1")
-    migration_rate = int(input(f"Enter the migration rate (default 10): ").strip() or "10")
-    elitism_rate = float(input(f"Enter the elitism rate (default 0.1): ").strip() or "0.1")
-    islands_count = int(input(f"Enter the number of islands (default 12): ").strip() or "12")
-    max_generations = int(input(f"Enter the maximum number of generations (default 100): ").strip() or "100")
+    states_1 = odeint(f, state0_1, time)
+    states_2 = odeint(f, state0_2, time)
 
-    start_time = time.time()
+    x1_end, y1_end, z1_end = states_1[-1]
+    x2_end, y2_end, z2_end = states_2[-1]
 
-    grid = Grid(grid_size, forbidden_cells, wifi_power, wall_penalty)
+    fig = plt.figure()
 
-    island_model = Island(grid, wifi_count,
-                          population_size, mutation_rate,
-                          migration_rate, elitism_rate)
-    best_individual = island_model.run(islands_count, max_generations)
+    ax1 = fig.add_subplot(231, projection='3d')
+    plot_trajectory(ax1, states_1, 'blue', "Початковий стан: [1.0, 1.0, 1.0]")
 
-    print("Best individual's fitness:", best_individual.coverage)
-    print("Best individual's wifi positions:", best_individual.wifi_positions)
+    ax2 = fig.add_subplot(232, projection='3d')
+    plot_trajectory(ax2, states_2, 'red', "Початковий стан: [1.0, 1.0, 1.001]")
 
-    end_time = time.time()
-    result_time = end_time - start_time
-    print(f"Time: {result_time:.2f}")
+    ax_end_points = fig.add_subplot(233, projection='3d')
+    plot_endpoints(ax_end_points, (x1_end, y1_end, z1_end), (x2_end, y2_end, z2_end))
 
-    visualizer = Visualizer(grid_size, forbidden_cells, best_individual.wifi_positions)
-    visualizer.visualize(best_individual.signal_grid)
+    ax_both_trajectory = fig.add_subplot(223, projection='3d')
+    plot_trajectory(ax_both_trajectory, states_1, 'blue')
+    plot_trajectory(ax_both_trajectory, states_2, 'red', "Порівняння обох траєкторій")
 
+    ax_animation = fig.add_subplot(224, projection='3d')
+    update = create_lorenz_animation_subplot(ax_animation, states_1, states_2, time)
+    
+    ani = FuncAnimation(fig, update, frames=len(time), interval=10, blit=True)
 
+    toggle_full_screen()
+
+    plt.show()
 
 if __name__ == "__main__":
     main()
