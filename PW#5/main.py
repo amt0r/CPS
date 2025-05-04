@@ -8,7 +8,7 @@ from visualizer import Visualizer
 
 def main():
     grid_size = 30
-    forbidden_cells = load_forbidden_cells("./PW#4/grid.csv") 
+    forbidden_cells = load_forbidden_cells("./PW#5/grid.csv") 
 
     wifi_count = int(input(f"Enter the number of Wi-Fi routers (default 8): ").strip() or "8")
     wifi_power = int(input(f"Enter the Wi-Fi power (default 10): ").strip() or "10")
